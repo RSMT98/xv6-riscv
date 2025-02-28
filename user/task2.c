@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
         exit(1);
     case 0:
         close(pipefd[1]);
-        
+
         if (close(0) < 0)
         {
             fprintf(2, "Child: Error closing stdin\n");
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
                 }
                 bytes_written += bytes_transfered;
             }
-            if ((i != (argc - 1)) && (write(pipefd[1], "\n", 1) <= 0))
+            if (write(pipefd[1], "\n", 1) <= 0)
             {
                 fprintf(2, "Parent: Error writing the '\\n'\n");
                 close(pipefd[1]);
