@@ -24,13 +24,8 @@ int main(int argc, char *argv[])
         close(pipefd[1]);
         exit(EXIT_FAILURE);
     case 0:
-        if (close(pipefd[1]) < 0)
-        {
-            perror("Child: Error closing the write end of the pipe");
-            close(pipefd[0]);
-            exit(EXIT_FAILURE);
-        }
-
+        close(pipefd[1]);
+        
         char buffer[BUFFER_SIZE];
         ssize_t bytes_read = 0;
 
@@ -65,12 +60,7 @@ int main(int argc, char *argv[])
         }
         exit(EXIT_SUCCESS);
     default:
-        if (close(pipefd[0]) < 0)
-        {
-            perror("Parent: Error closing the read end of the pipe");
-            close(pipefd[1]);
-            exit(EXIT_FAILURE);
-        }
+        close(pipefd[0]);
 
         for (int i = 0; i < argc; ++i)
         {

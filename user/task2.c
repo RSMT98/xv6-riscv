@@ -20,12 +20,8 @@ int main(int argc, char *argv[])
         close(pipefd[1]);
         exit(1);
     case 0:
-        if (close(pipefd[1]) < 0)
-        {
-            fprintf(2, "Child: Error closing the write end of the pipe\n");
-            close(pipefd[0]);
-            exit(1);
-        }
+        close(pipefd[1]);
+        
         if (close(0) < 0)
         {
             fprintf(2, "Child: Error closing stdin\n");
@@ -54,12 +50,7 @@ int main(int argc, char *argv[])
         fprintf(2, "Child: exec failed\n");
         exit(1);
     default:
-        if (close(pipefd[0]) < 0)
-        {
-            fprintf(2, "Parent: Error closing the read end of the pipe\n");
-            close(pipefd[1]);
-            exit(1);
-        }
+        close(pipefd[0]);
 
         for (int i = 0; i < argc; ++i)
         {
