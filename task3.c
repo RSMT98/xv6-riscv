@@ -24,8 +24,13 @@ int main(int argc, char *argv[])
         close(pipefd[1]);
         exit(EXIT_FAILURE);
     case 0:
-        close(pipefd[1]);
-        
+        if (close(pipefd[1]) < 0)
+        {
+            perror("Child: Error closing the write end of the pipe");
+            close(pipefd[0]);
+            exit(EXIT_FAILURE);
+        }
+
         char buffer[BUFFER_SIZE];
         ssize_t bytes_read = 0;
 
@@ -70,7 +75,7 @@ int main(int argc, char *argv[])
 
             while (bytes_written < arg_length)
             {
-                size_t bytes_transfered = write(pipefd[1], arg + bytes_written, arg_length - bytes_written);
+                ssize_t bytes_transfered = write(pipefd[1], arg + bytes_written, arg_length - bytes_written);
                 if (bytes_transfered <= 0)
                 {
                     perror("Parent: Write error");
