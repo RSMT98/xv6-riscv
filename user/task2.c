@@ -20,7 +20,12 @@ int main(int argc, char *argv[])
         close(pipefd[1]);
         exit(1);
     case 0:
-        close(pipefd[1]);
+        if (close(pipefd[1]) < 0)
+        {
+            fprintf(2, "Child: Error closing the write end of the pipe\n");
+            close(pipefd[0]);
+            exit(1);
+        }
 
         if (close(0) < 0)
         {
