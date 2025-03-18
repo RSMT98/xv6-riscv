@@ -5,38 +5,53 @@
 
 int main()
 {
-    struct procinfo *plist = malloc(NPROC * sizeof(struct procinfo));
-    if (!plist)
-    {
-        fprintf(2, "Bad malloc\n");
-        exit(1);
-    }
+    int buffer_size = NPROC;
+    struct procinfo *plist = 0;
+    int procs;
 
-    int procs = ps_listinfo(plist, NPROC);
-    switch (procs)
+    while (1)
     {
-    case -1:
-        fprintf(2, "Error getting the current process\n");
-        free(plist);
-        exit(1);
-    case -2:
-        fprintf(2, "Incorrect lim value (it cannot be negative)\n");
-        free(plist);
-        exit(1);
-    case -3:
-        fprintf(2, "Insufficient buffer size\n");
-        free(plist);
-        exit(1);
-    case -4:
-        fprintf(2, "Error copying from kernel to user\n");
-        free(plist);
-        exit(1);
-    }
-    if (procs < 0)
-    {
-        fprintf(2, "Some untraceable error happened while receiving processes info\n");
-        free(plist);
-        exit(1);
+        if (plist)
+        {
+            free(plist);
+        }
+        plist = malloc(buffer_size * sizeof(struct procinfo));
+
+        if (!plist)
+        {
+            fprintf(2, "Bad malloc\n");
+            exit(1);
+        }
+
+        procs = ps_listinfo(plist, buffer_size);
+        if (procs >= 0)
+        {
+            break;
+        }
+        else if (procs == -3)
+        {
+            buffer_size *= 2;
+        }
+        else
+        {
+            switch (procs)
+            {
+            case -1:
+                fprintf(2, "Error getting the current process\n");
+                break;
+            case -2:
+                fprintf(2, "Incorrect lim value (it cannot be negative)\n");
+                break;
+            case -4:
+                fprintf(2, "Error copying from kernel to user\n");
+                break;
+            default:
+                fprintf(2, "Some untraceable error happened while receiving processes info\n");
+                break;
+            }
+            free(plist);
+            exit(1);
+        }
     }
 
     printf("id\tname\tstate\tppid\tpname\n");
@@ -72,7 +87,7 @@ int main()
             break;
         }
 
-        if (state_name[0]=='\0')
+        if (state_name[0] == '\0')
         {
             fprintf(2, "Process %d has an unexpected state %d\n", plist[i].pid, plist[i].state);
             free(plist);
