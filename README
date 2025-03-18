@@ -1,3 +1,17 @@
+Modified or added files include
+
+Makefile
+kernel/procinfo.h - task 1
+kernel/syscall.c
+kernel/syscall.h
+kernel/syspslistinfo.c - task 2
+user/testpslistinfo.c - task 3
+user/ps.c - task 4
+user/user.h
+user/usys.pl
+
+The following is the text of the original README file.
+
 xv6 is a re-implementation of Dennis Ritchie's and Ken Thompson's Unix
 Version 6 (v6).  xv6 loosely follows the structure and style of v6,
 but is implemented for a modern RISC-V multiprocessor using ANSI C.
