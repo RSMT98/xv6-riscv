@@ -73,16 +73,16 @@ int main()
         char *state_name = "";
         switch (plist[i].state)
         {
-        case 2:
+        case PROCINFO_SLEEPING:
             state_name = "SLEEPING";
             break;
-        case 3:
+        case PROCINFO_RUNNABLE:
             state_name = "RUNNABLE";
             break;
-        case 4:
+        case PROCINFO_RUNNING:
             state_name = "RUNNING";
             break;
-        case 5:
+        case PROCINFO_ZOMBIE:
             state_name = "ZOMBIE";
             break;
         }

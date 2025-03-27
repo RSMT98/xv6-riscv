@@ -57,12 +57,20 @@ void test_bad_buffer()
         printf("test_bad_buffer: SKIPPED (not enough processes)\n");
         return;
     }
-    int error_val = ps_listinfo((struct procinfo *)0xABCDEFFF, total_procs - 1);
+    struct procinfo *plist = malloc((total_procs - 1) * sizeof(struct procinfo));
+    if (!plist)
+    {
+        printf("test_bad_buffer: FAILED (bad malloc)\n");
+        exit(0);
+    }
+    int error_val = ps_listinfo(plist, total_procs - 1);
     if (error_val != -3)
     {
         printf("test_bad_buffer: FAILED (expected error_val -3, got %d)\n", error_val);
+        free(plist);
         exit(0);
     }
+    free(plist);
     printf("test_bad_buffer: PASSED\n");
 }
 
