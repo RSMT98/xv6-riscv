@@ -12,6 +12,7 @@
 #include "file.h"
 #include "stat.h"
 #include "proc.h"
+#include "mutex.h"
 
 struct devsw devsw[NDEV];
 struct {
@@ -64,6 +65,9 @@ fileclose(struct file *f)
   acquire(&ftable.lock);
   if(f->ref < 1)
     panic("fileclose");
+  if (f->type == FD_MUTEX && holdingsleep(&f->mutex->sleeplock)) {
+    releasesleep(&f->mutex->sleeplock);
+  }
   if(--f->ref > 0){
     release(&ftable.lock);
     return;
@@ -80,6 +84,8 @@ fileclose(struct file *f)
     iput(ff.ip);
     end_op();
   }
+  else if (ff.type == FD_MUTEX)
+    mutexclose(&ff);
 }
 
 // Get metadata about file f.
@@ -90,6 +96,8 @@ filestat(struct file *f, uint64 addr)
   struct proc *p = myproc();
   struct stat st;
   
+  if(f->type == FD_MUTEX)
+		return -1;
   if(f->type == FD_INODE || f->type == FD_DEVICE){
     ilock(f->ip);
     stati(f->ip, &st);
@@ -111,6 +119,8 @@ fileread(struct file *f, uint64 addr, int n)
   if(f->readable == 0)
     return -1;
 
+  if(f->type == FD_MUTEX)
+    return -1;
   if(f->type == FD_PIPE){
     r = piperead(f->pipe, addr, n);
   } else if(f->type == FD_DEVICE){
@@ -139,6 +149,8 @@ filewrite(struct file *f, uint64 addr, int n)
   if(f->writable == 0)
     return -1;
 
+  if(f->type == FD_MUTEX)
+    return -1;
   if(f->type == FD_PIPE){
     ret = pipewrite(f->pipe, addr, n);
   } else if(f->type == FD_DEVICE){

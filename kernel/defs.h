@@ -9,6 +9,14 @@ struct sleeplock;
 struct stat;
 struct superblock;
 
+// mutex.c
+int             mutexalloc(struct file**);
+int             mutexclose(struct file*);
+
+// sysfile.c
+int             fdalloc(struct file*);
+int             argfd(int, int *, struct file **);
+
 // bio.c
 void            binit(void);
 struct buf*     bread(uint, uint);
