@@ -65,7 +65,7 @@ fileclose(struct file *f)
   acquire(&ftable.lock);
   if(f->ref < 1)
     panic("fileclose");
-  if (f->type == FD_MUTEX && holdingsleep(&f->mutex->sleeplock) && f->mutex->sleeplock.pid == myproc()->pid) {
+  if (f->type == FD_MUTEX && holdingsleep(&f->mutex->sleeplock)) {
     releasesleep(&f->mutex->sleeplock);
   }
   if(--f->ref > 0){

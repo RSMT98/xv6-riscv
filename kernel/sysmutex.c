@@ -50,9 +50,12 @@ uint64 sys_mutex_unlock(void) {
         return -1;
     
     struct mutex* m = f->mutex;
+    acquire(&m->sleeplock.lk);
     if(m->sleeplock.pid != myproc()->pid) {
+        release(&m->sleeplock.lk);
         return -1;
     }
+    release(&m->sleeplock.lk);
     releasesleep(&m->sleeplock);
 
     return 0;

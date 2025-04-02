@@ -24,7 +24,7 @@ int mutexalloc(struct file **f)
         fileclose(file);
         return -1;
     }
-    printf("mutexalloc: mutex successfully allocated\n");
+    printf("mutexalloc: mutex successfully allocated at %p\n", m);
 
     initsleeplock(&m->sleeplock, "mutex_sleep");
     file->type = FD_MUTEX;
@@ -53,8 +53,8 @@ int mutexclose(struct file *f)
     }
     
     kfree(f->mutex);
+    printf("mutexclose: mutex successfully freed at %p\n", f->mutex);
     f->mutex = 0;
-    printf("mutexclose: mutex successfully freed\n");
 
     return 0;
 }
