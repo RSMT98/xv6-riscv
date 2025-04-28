@@ -20,22 +20,15 @@ int ps_read(int minor, int user_dst, uint64 dst, int n)
     case NULL:
         return 0;
     case ZERO:
-        char *zero_buf = kalloc();
-        if (!zero_buf)
-            return -1;
-        memset(zero_buf, 0, PGSIZE);
+        static char zero_buf[PGSIZE] = {0};
         int remaining = n;
         while (remaining > 0)
         {
             int chunk = remaining > PGSIZE ? PGSIZE : remaining;
             if (copyout(myproc()->pagetable, dst + n - remaining, zero_buf, chunk) < 0)
-            {
-                kfree(zero_buf);
                 return -1;
-            }
             remaining -= chunk;
         }
-        kfree(zero_buf);
         return n;
     case URANDOM:
         acquire(&urandom_lock);
