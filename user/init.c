@@ -8,14 +8,31 @@
 #include "kernel/file.h"
 #include "user/user.h"
 #include "kernel/fcntl.h"
+#include "kernel/ps.h"
 
 char *argv[] = { "sh", 0 };
 
 int
 main(void)
 {
-  int pid, wpid;
+  int pid, wpid, fd;
 
+  if ((fd = open("null", O_RDONLY)) < 0)
+    mknod("null", PS_MAJOR, NULL);
+  else
+    close(fd);
+  if ((fd = open("zero", O_RDONLY)) < 0)
+    mknod("zero", PS_MAJOR, ZERO);
+  else
+    close(fd);
+  if ((fd = open("urandom", O_RDONLY)) < 0)
+    mknod("urandom", PS_MAJOR, URANDOM);
+  else
+    close(fd);
+  if ((fd = open("nullstat", O_RDONLY)) < 0)
+    mknod("nullstat", PS_MAJOR, NULLSTAT);
+  else
+    close(fd);
   if(open("console", O_RDWR) < 0){
     mknod("console", CONSOLE, 0);
     open("console", O_RDWR);
